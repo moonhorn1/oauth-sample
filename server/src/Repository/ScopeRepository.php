@@ -18,7 +18,7 @@ class ScopeRepository implements ScopeRepositoryInterface
      */
     public function getScopeEntityByIdentifier($identifier)
     {
-        // TODO: Implement getScopeEntityByIdentifier() method.
+        return null;
     }
 
     /**
@@ -26,6 +26,6 @@ class ScopeRepository implements ScopeRepositoryInterface
      */
     public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null)
     {
-        // TODO: Implement finalizeScopes() method.
+        return [];
     }
 }

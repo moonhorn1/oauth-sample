@@ -5,6 +5,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Client;
+use Doctrine\ORM\EntityManagerInterface;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 
 /**
@@ -13,18 +16,30 @@ use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 class ClientRepository implements ClientRepositoryInterface
 {
     /**
-     * @inheritDoc
+     * @var \Doctrine\ORM\EntityRepository
      */
-    public function getClientEntity($clientIdentifier)
+    private $repository;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        // TODO: Implement getClientEntity() method.
+        $this->repository = $entityManager->getRepository(Client::class);
     }
 
     /**
      * @inheritDoc
      */
-    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    public function getClientEntity($clientIdentifier): ?ClientEntityInterface
     {
-        // TODO: Implement validateClient() method.
+        return $this->repository->findOneBy(['clientId' => $clientIdentifier]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
+    {
+        $client = $this->getClientEntity($clientIdentifier);
+
+        return null !== $client && (null === $clientSecret || $client->getClientSecret() === $clientSecret);
     }
 }

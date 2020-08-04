@@ -68,7 +68,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
             return;
         }
 
-        $token->setRevoked(true);
+        $this->em->remove($token);
         $this->em->flush();
     }
 
@@ -79,6 +79,6 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
     {
         $token = $this->repository->find($tokenId);
 
-        return null === $token || $token->isRevoked();
+        return null === $token;
     }
 }

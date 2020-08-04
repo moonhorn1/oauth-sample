@@ -20,6 +20,9 @@ class ClientRepository implements ClientRepositoryInterface
      */
     private $repository;
 
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager Entity manager
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->repository = $entityManager->getRepository(Client::class);

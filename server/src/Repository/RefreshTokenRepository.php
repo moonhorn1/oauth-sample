@@ -5,6 +5,8 @@
 
 namespace App\Repository;
 
+use App\Entity\RefreshToken;
+use Doctrine\ORM\EntityManagerInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
@@ -14,19 +16,39 @@ use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
     /**
-     * @inheritDoc
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
-    public function getNewRefreshToken()
+    private $em;
+
+    /**
+     * @var \Doctrine\ORM\EntityRepository
+     */
+    private $repository;
+
+    /**
+     * @param \Doctrine\ORM\EntityManagerInterface $entityManager Entity manager
+     */
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        // TODO: Implement getNewRefreshToken() method.
+        $this->em = $entityManager;
+        $this->repository = $entityManager->getRepository(RefreshToken::class);
     }
 
     /**
      * @inheritDoc
      */
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity)
+    public function getNewRefreshToken(): RefreshToken
     {
-        // TODO: Implement persistNewRefreshToken() method.
+        return new RefreshToken();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void
+    {
+        $this->em->persist($refreshTokenEntity);
+        $this->em->flush();
     }
 
     /**
@@ -34,7 +56,14 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function revokeRefreshToken($tokenId)
     {
-        // TODO: Implement revokeRefreshToken() method.
+        $token = $this->repository->find($tokenId);
+
+        if (null === $token) {
+            return;
+        }
+
+        $this->em->remove($token);
+        $this->em->flush();
     }
 
     /**
@@ -42,6 +71,8 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
      */
     public function isRefreshTokenRevoked($tokenId)
     {
-        // TODO: Implement isRefreshTokenRevoked() method.
+        $token = $this->repository->find($tokenId);
+
+        return null === $token;
     }
 }

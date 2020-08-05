@@ -76,7 +76,7 @@ class AccessToken implements AccessTokenEntityInterface
      */
     public function getExpiryDateTime(): DateTimeImmutable
     {
-        return $this->getExpiryDateTime();
+        return $this->expiryDateTime;
     }
 
     /**

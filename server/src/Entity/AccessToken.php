@@ -58,6 +58,11 @@ class AccessToken implements AccessTokenEntityInterface
      */
     private $createdAt;
 
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
+
     /**
      * @inheritDoc
      */

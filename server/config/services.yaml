@@ -30,6 +30,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface: '@sensio_framework_extra.psr7.http_message_factory'
+
     league.oauth2_auth_code_lifetime_interval:
         class: DateInterval
         arguments:
@@ -45,6 +47,10 @@ services:
         arguments:
             - '%env(OAUTH2_REFRESH_TOKEN_LIFETIME)%'
 
+    League\OAuth2\Server\Grant\PasswordGrant:
+        - '@App\Repository\UserRepository'
+        - '@App\Repository\RefreshTokenRepository'
+
     League\OAuth2\Server\Grant\RefreshTokenGrant:
         arguments:
             - '@App\Repository\RefreshTokenRepository'
@@ -58,12 +64,12 @@ services:
             - '@App\Repository\ClientRepository'
             - '@App\Repository\AccessTokenRepository'
             - '@App\Repository\ScopeRepository'
-            - '%env(OAUTH2_PRIVATE_KEY_FILE)%'
+            - '%kernel.project_dir%/%env(OAUTH2_PRIVATE_KEY_FILE)%'
             - '%env(OAUTH2_ENCRYPTION_KEY)%'
         calls:
             - method: 'enableGrantType'
               arguments:
-                  - 'League\OAuth2\Server\Grant\PasswordGrant'
+                  - '@League\OAuth2\Server\Grant\PasswordGrant'
                   - '@league.oauth2_access_token_lifetime_interval'
             - method: 'enableGrantType'
               arguments:
@@ -73,4 +79,4 @@ services:
     League\OAuth2\Server\ResourceServer:
         arguments:
             - '@App\Repository\AccessTokenRepository'
-            - '%env(OAUTH2_PUBLIC_KEY_FILE)%'
+            - '%kernel.project_dir%/%env(OAUTH2_PUBLIC_KEY_FILE)%'

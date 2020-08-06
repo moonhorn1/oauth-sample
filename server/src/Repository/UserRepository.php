@@ -6,26 +6,25 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
 
 /**
  * User repository
+ *
+ * @method User|null find($id, $lockMode = null, $lockVersion = null)
+ * @method User|null findOneBy(array $criteria, array $orderBy = null)
  */
-class UserRepository implements UserRepositoryInterface
+class UserRepository extends ServiceEntityRepository implements UserRepositoryInterface
 {
     /**
-     * @var \Doctrine\ORM\EntityRepository
+     * @param \Doctrine\Persistence\ManagerRegistry $registry Manager registry
      */
-    private $repository;
-
-    /**
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager Entity manager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $entityManager->getRepository(User::class);
+        parent::__construct($registry, User::class);
     }
 
     /**
@@ -33,6 +32,6 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity): ?User
     {
-        return $this->repository->findOneBy(['username' => $username, 'password' => $password]);
+        return $this->findOneBy(['username' => $username, 'password' => $password]);
     }
 }

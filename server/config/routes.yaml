@@ -1,3 +1,7 @@
+profile:
+    path:       /auth/profile
+    controller: App\Controller\Profile
+
 auth:
-    path: /oauth/auth
+    path:       /oauth/auth
     controller: App\Controller\Auth

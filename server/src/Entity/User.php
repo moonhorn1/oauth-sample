@@ -28,7 +28,7 @@ class User implements UserEntityInterface
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(unique=true)
      */
     private $username;
 

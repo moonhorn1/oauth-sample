@@ -1,3 +1,7 @@
+sign_up:
+    path:       /auth/signup
+    controller: App\Controller\SignUp
+
 profile:
     path:       /auth/profile
     controller: App\Controller\Profile

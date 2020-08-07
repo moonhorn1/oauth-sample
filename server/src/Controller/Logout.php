@@ -59,11 +59,12 @@ class Logout
         if ('refresh_token' === $data['token_type_hint']) {
             $encryptedRefreshToken = $data['token'];
 
-            $oldRefreshToken = $this->validateRefreshToken($encryptedRefreshToken, $data['client_id']);
-            // Expire old tokens
+            $refreshToken = $this->validateRefreshToken($encryptedRefreshToken, $data['client_id']);
 
-            $this->accessTokenRepository->revokeAccessToken($oldRefreshToken['access_token_id']);
-            $this->refreshTokenRepository->revokeRefreshToken($oldRefreshToken['refresh_token_id']);
+            // Expire all tokens
+            $this->accessTokenRepository->revokeAccessToken($refreshToken['access_token_id']);
+            $this->accessTokenRepository->revokeAllClientUserTokens($refreshToken['client_id'], $refreshToken['client_id']);
+            $this->refreshTokenRepository->revokeRefreshToken($refreshToken['refresh_token_id']);
         }
 
         return new Response();

@@ -9,3 +9,7 @@ profile:
 auth:
     path:       /oauth/auth
     controller: App\Controller\Auth
+
+logout:
+    path:       /oauth/logout
+    controller: App\Controller\Logout

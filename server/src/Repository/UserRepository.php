@@ -32,6 +32,6 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
      */
     public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity): ?User
     {
-        return $this->findOneBy(['username' => $username, 'password' => $password]);
+        return $this->findOneBy(['username' => $username, 'password' => hash('gost', $password)]);
     }
 }

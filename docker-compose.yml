@@ -46,8 +46,9 @@ services:
             - /bin/sh
             - -c
             - |
-                mkdir -p var/key/ &&  openssl genrsa -out /app/server/var/key/private.key 2048  \
+                composer install && mkdir -p var/key/ &&  openssl genrsa -out /app/server/var/key/private.key 2048  \
                     && openssl rsa -in /app/server/var/key/private.key -pubout -out /app/server/var/key/public.key  \
+                    && chown www-data /app/server/var/key/private.key && chown www-data /app/server/var/key/public.key \
                     && chmod 660 /app/server/var/key/private.key && chmod 660 /app/server/var/key/public.key \
                     && sleep 5 && cd /app/server && bin/console doctrine:migrations:migrate && bin/console doctrine:fixtures:load -n && php-fpm
 

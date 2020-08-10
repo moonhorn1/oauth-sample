@@ -12,7 +12,4 @@ RUN apt-get update \
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-CMD mkdir -p var/key/ && openssl genrsa -out /app/server/var/key/private.key 2048  \
-    && openssl rsa -in /app/server/var/key/private.key -pubout -out /app/server/var/key/public.key  \
-    && chmod 600 /app/server/var/key/private.key && chmod 600  /app/server/var/key/public.key ; \
-    composer install ; php-fpm
+CMD php-fpm

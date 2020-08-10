@@ -1,0 +1,72 @@
+version: '3.1'
+services:
+    mariadb:
+        image:          mariadb:10.4
+        container_name: oauth-mariadb
+        working_dir:    /app
+        volumes:
+            - .:/app
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=oauth
+            - MYSQL_USER=oauth
+            - MYSQL_PASSWORD=oauth
+
+    webserver:
+        image: nginx:alpine
+        user: ${CURRENT_UID}
+        container_name: oauth-webserver
+        depends_on:
+            - php-fpm
+        links:
+            - php-fpm
+        working_dir: /app
+        volumes:
+            - ./server:/app/server
+            - ./client:/app/client
+            - var-volume:/app/server/var
+            - client-public:/app/client/public
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        ports:
+            - "8000:80"
+
+    php-fpm:
+        build:
+            context: .
+            dockerfile: docker/php-fpm/Dockerfile
+        user: ${CURRENT_UID}
+        container_name: oauth-php-fpm
+        depends_on:
+            - mariadb
+        working_dir: /app/server
+        volumes:
+            - ./server:/app/server
+            - var-volume:/app/server/var
+        command:
+            - /bin/sh
+            - -c
+            - |
+                mkdir -p var/key/ &&  openssl genrsa -out /app/server/var/key/private.key 2048  \
+                    && openssl rsa -in /app/server/var/key/private.key -pubout -out /app/server/var/key/public.key  \
+                    && chmod 660 /app/server/var/key/private.key && chmod 660 /app/server/var/key/public.key \
+                    && sleep 5 && cd /app/server && bin/console doctrine:migrations:migrate && bin/console doctrine:fixtures:load -n && php-fpm
+
+    node:
+        build:
+            context: .
+            dockerfile: docker/node/Dockerfile
+        user: ${CURRENT_UID}
+        container_name: oauth-angular
+        working_dir: /app/client
+        volumes:
+            - ./client:/app/client
+            - client-public:/app/client/public
+        command:
+            - /bin/sh
+            - -c
+            - |
+                cd /app/client && yarn && yarn build
+
+volumes:
+    var-volume:
+    client-public:
